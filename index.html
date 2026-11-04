@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-[#F5F2EC] overflow-x-hidden">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Aceng Production Jogja Catalogue</title>
+
+  <!-- Tailwind CSS & FontAwesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#F5F2EC',
+              card: '#FFFFFF',
+              dark: '#111111',
+              muted: '#777777',
+              accent: '#E6E1D6',
+              border: '#E8E4DC'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Mobile Touch & Scroll Fixes */
+    html, body {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+      width: 100%;
+    }
+
+    /* Prevent Browser Zoom on Input Focus (Mobile 16px min) */
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+    @media (min-width: 640px) {
+      input, select, textarea {
+        font-size: 0.75rem !important; /* 12px on desktop */
+      }
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Splash Screen Animations */
+    @keyframes splashScale {
+      0% { transform: scale(0.85); opacity: 0; filter: blur(8px); }
+      50% { opacity: 1; filter: blur(0px); }
+      100% { transform: scale(1.02); opacity: 1; filter: blur(0px); }
+    }
+
+    @keyframes splashFadeOut {
+      0% { opacity: 1; visibility: visible; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    .animate-splash-logo {
+      animation: splashScale 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .splash-exit {
+      animation: splashFadeOut 0.4s ease-out forwards;
+    }
+
+    /* iOS-Style Modal Animations */
+    .ios-modal-enter {
+      animation: iosModalIn 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    
+    .ios-modal-exit {
+      animation: iosModalOut 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes iosModalIn {
+      0% { opacity: 0; transform: scale(0.9) translateY(24px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes iosModalOut {
+      0% { opacity: 1; transform: scale(1) translateY(0); }
+      100% { opacity: 0; transform: scale(0.92) translateY(16px); }
+    }
+
+    /* Search Bar Expand Animation */
+    .search-expand {
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .search-expand.open {
+      max-height: 70px;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .card-ios-hover {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-ios-hover:active {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body class="h-full font-sans bg-[#F5F2EC] text-brand-dark antialiased selection:bg-brand-dark selection:text-white flex flex-col min-h-screen w-full">
+
+  <!-- 1. MOTION SPLASH SCREEN INTRO (BOX DARK STUDIO ELEGAN TAJAM) -->
+  <div id="splashScreen" class="fixed inset-0 z-[100] bg-[#F5F2EC] flex flex-col items-center justify-center p-6 transition-all duration-500">
+    <div class="relative flex flex-col items-center justify-center">
+      
+      <!-- Container Logo Hitam Matte Studio -->
+      <div class="animate-splash-logo flex items-center justify-center p-5 bg-[#111111] rounded-3xl shadow-2xl h-44 w-44 sm:h-56 sm:w-56 md:h-64 md:w-64 mb-6 border border-stone-800 relative overflow-hidden">
+        
+        <!-- PNG Logo -->
+        <img id="splashLogoImg" src="images/logo.png" onerror="handleLogoError(this)" alt="Aceng Production Logo" class="max-h-full max-w-full object-contain filter drop-shadow-md">
+        
+        <!-- Vektor Branded Logo Fallback Jika Gambar PNG Kosong -->
+        <div id="splashLogoSvg" class="hidden flex flex-col items-center justify-center text-center">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 mb-2">
+            <i class="fa-solid fa-camera-retro text-2xl sm:text-3xl text-white"></i>
+          </div>
+          <span class="text-xs font-black tracking-widest text-white uppercase">ACENG</span>
+          <span class="text-[9px] font-bold tracking-[0.3em] text-stone-400 uppercase">PRODUCTION</span>
+        </div>
+
+      </div>
+
+      <div class="text-center overflow-hidden">
+        <p class="text-xs sm:text-sm uppercase tracking-[0.4em] text-stone-800 font-bold animate-pulse">
+          CATALOG
+        </p>
+        <p class="text-[10px] sm:text-xs tracking-widest text-stone-500 font-medium mt-1">
+          BY.ACGJOGJA
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. MAIN HEADER -->
+  <header class="sticky top-0 z-30 bg-[#F5F2EC]/90 backdrop-blur-md border-b border-brand-border/60 transition-all">
+    <div class="max-w-5xl mx-auto px-3.5 h-14 sm:h-16 flex items-center justify-between">
+      
+      <!-- Menu Button -->
+      <div class="relative">
+        <button onclick="toggleMenu()" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full hover:bg-black/5 active:bg-black/10 transition text-brand-dark">
+          <i class="fa-solid fa-ellipsis-vertical text-lg sm:text-xl"></i>
+        </button>
+
+        <div id="dropdownMenu" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-stone-200/80 py-2 z-50 transform origin-top-left transition-all duration-200">
+          <button onclick="openDevAuthModal(); toggleMenu();" class="w-full px-4 py-2.5 text-left text-xs font-semibold text-stone-800 hover:bg-stone-100 flex items-center gap-2.5 active:bg-stone-200">
+            <i class="fa-solid fa-code text-stone-500"></i>
+            <span>Developer Site</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Center Branding -->
+      <div class="text-center">
+        <h1 class="text-base sm:text-xl font-extrabold tracking-tighter text-brand-dark leading-none">catalog</h1>
+        <span class="text-[8px] sm:text-[10px] uppercase tracking-[0.25em] text-stone-500 font-semibold">BY.ACGJOGJA</span>
+      </div>
+
+      <!-- Search Toggle Button -->
+      <button onclick="toggleMobileSearch()" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full hover:bg-black/5 active:bg-black/10 transition text-brand-dark">
+        <i class="fa-solid fa-magnifying-glass text-base sm:text-lg"></i>
+      </button>
+    </div>
+
+    <!-- SEARCH BAR ANIMASI iOS -->
+    <div id="mobileSearchBar" class="search-expand max-w-5xl mx-auto px-3.5">
+      <div class="pb-2.5 max-w-md mx-auto">
+        <div class="relative flex items-center">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-stone-400 text-xs pointer-events-none"></i>
+          <input type="text" id="searchInput" oninput="handleSearchInput(this.value)" placeholder="Cari tipe kamera..." class="w-full bg-white font-medium pl-9 pr-9 py-2 rounded-full border border-stone-300 focus:outline-none focus:border-black shadow-sm transition-all duration-200">
+          
+          <!-- Tombol Clear Search 'X' iOS -->
+          <button id="clearSearchBtn" onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-stone-300/70 hover:bg-stone-400 text-stone-600 hover:text-stone-900 flex items-center justify-center text-[10px] opacity-0 scale-75 pointer-events-none transition-all duration-200 ease-out active:scale-90">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. CATEGORY FILTER -->
+  <nav class="max-w-5xl mx-auto px-3.5 py-2.5 bg-[#F5F2EC]">
+    <div class="flex items-center justify-start md:justify-center gap-2 overflow-x-auto no-scrollbar text-xs font-medium py-0.5">
+      <button onclick="filterCategory('all', event)" class="cat-btn active bg-brand-dark text-white px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all duration-200 shadow-sm active:scale-95 text-[11px] sm:text-xs">Semua</button>
+      <button onclick="filterCategory('compact', event)" class="cat-btn bg-white text-stone-600 border border-stone-300 px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all duration-200 active:scale-95 text-[11px] sm:text-xs">Compact / Digicam</button>
+      <button onclick="filterCategory('mirrorless', event)" class="cat-btn bg-white text-stone-600 border border-stone-300 px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all duration-200 active:scale-95 text-[11px] sm:text-xs">Mirrorless</button>
+      <button onclick="filterCategory('dslr', event)" class="cat-btn bg-white text-stone-600 border border-stone-300 px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all duration-200 active:scale-95 text-[11px] sm:text-xs">DSLR & Lainnya</button>
+    </div>
+  </nav>
+
+  <!-- 4. PRODUCT CATALOG GRID -->
+  <main class="max-w-5xl mx-auto px-3.5 pt-1 flex-1 w-full">
+    <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+    
+    <div id="emptyState" class="hidden text-center py-14">
+      <div class="w-14 h-14 mx-auto bg-stone-200/60 rounded-full flex items-center justify-center text-stone-400 mb-2.5">
+        <i class="fa-solid fa-camera-rotate text-xl"></i>
+      </div>
+      <p class="text-xs font-semibold text-stone-600">Kamera tidak ditemukan</p>
+      <p class="text-[11px] text-stone-400 mt-0.5">Coba gunakan kata kunci pencarian lain</p>
+    </div>
+  </main>
+
+  <!-- 5. FOOTER -->
+  <footer class="max-w-5xl mx-auto px-4 py-6 mt-8 text-center border-t border-brand-border/60 w-full">
+    <p class="text-xs font-semibold tracking-wider text-stone-600">Aceng Production Jogja Catalogue</p>
+    <p class="text-[10px] tracking-widest text-stone-400 uppercase mt-1">© 2026 BY.ACGJOGJA. All rights reserved.</p>
+  </footer>
+
+  <!-- 6. MODAL VERIFIKASI PASSWORD DEVELOPER SITE -->
+  <div id="devAuthModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300">
+    <div id="devAuthCard" class="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl border border-stone-100 text-center relative ios-modal-enter">
+      <button onclick="closeDevAuthModal()" class="absolute right-4 top-4 text-stone-400 hover:text-stone-700 active:scale-90 transition-transform">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="w-12 h-12 bg-stone-100 text-brand-dark rounded-full flex items-center justify-center mx-auto mb-3 text-lg">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h3 class="text-sm font-bold text-stone-900">Developer Site Access</h3>
+      <p class="text-[11px] text-stone-500 mt-1 mb-4">Masukkan password untuk membuka panel pengelola.</p>
+
+      <input type="password" id="devPasswordInput" onkeypress="if(event.key === 'Enter') verifyDevPassword()" placeholder="Password..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-center font-medium focus:outline-none focus:border-brand-dark mb-3">
+      
+      <button onclick="verifyDevPassword()" class="w-full bg-brand-dark text-white font-semibold text-xs py-2.5 rounded-xl hover:bg-stone-800 transition active:scale-95">
+        Masuk Panel
+      </button>
+    </div>
+  </div>
+
+  <!-- 7. DEVELOPER SITE PANEL -->
+  <div id="devPanelModal" class="hidden fixed inset-0 z-50 bg-stone-900/40 backdrop-blur-md overflow-y-auto">
+    <div class="min-h-full max-w-2xl mx-auto bg-[#F5F2EC] flex flex-col min-h-screen">
+      
+      <div class="sticky top-0 bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between z-10">
+        <div class="flex items-center gap-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span class="text-xs font-bold tracking-tight text-stone-900">Developer Site Panel</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="lockDevSession()" class="text-[11px] bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium px-2.5 py-1 rounded-lg transition active:scale-95" title="Kunci Session">
+            <i class="fa-solid fa-lock text-xs mr-1"></i>Kunci
+          </button>
+          <button onclick="closeDevPanel()" class="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-500 active:scale-90">
+            <i class="fa-solid fa-xmark text-base"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-4 space-y-4 flex-1">
+        
+        <div class="bg-white rounded-2xl p-4 sm:p-6 border border-stone-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-stone-100 pb-2.5">
+            <h4 id="formTitle" class="text-xs font-bold uppercase tracking-wider text-stone-800">Tambah Kamera Baru</h4>
+            <button onclick="resetForm()" id="cancelEditBtn" class="hidden text-[10px] text-red-500 font-semibold hover:underline">Batal Edit</button>
+          </div>
+
+          <input type="hidden" id="editCamId">
+
+          <div>
+            <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Nama Kamera</label>
+            <input type="text" id="camName" placeholder="Nama Kamera..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brand-dark">
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Kategori</label>
+            <select id="camCategory" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-2.5 py-2 focus:outline-none focus:border-brand-dark">
+              <option value="compact">Compact / Digicam</option>
+              <option value="mirrorless">Mirrorless</option>
+              <option value="dslr">DSLR & Lainnya</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Kelengkapan Paket Sewa (Isi 1 Poin Per Baris)</label>
+            <textarea id="camInclusions" rows="3" placeholder="Kelengkapan paket sewa (1 poin per baris)..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brand-dark resize-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Spesifikasi Unit (Tiap Spasi Jadi Bubble Sendiri)</label>
+            <input type="text" id="camSpecs" placeholder="Spesifikasi unit..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brand-dark">
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Deskripsi Ringkas</label>
+            <textarea id="camDesc" rows="2" placeholder="Deskripsi unit..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brand-dark resize-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Foto Cover (Drag & Drop / Select)</label>
+            <div id="dropZoneCover" class="border-2 border-dashed border-stone-200 rounded-xl p-3 text-center cursor-pointer hover:bg-stone-50 transition bg-stone-50/50">
+              <i class="fa-solid fa-cloud-arrow-up text-stone-400 text-lg mb-1"></i>
+              <p class="text-[10px] text-stone-500 font-medium">Drag foto cover ke sini atau <span class="text-brand-dark font-bold underline">pilih file</span></p>
+              <input type="file" id="coverFileInput" accept="image/*" class="hidden" onchange="handleCoverSelect(this)">
+            </div>
+            <div id="coverPreviewBox" class="hidden mt-2 relative w-20 h-20 rounded-lg overflow-hidden border border-stone-200">
+              <img id="coverPreviewImg" src="" class="w-full h-full object-cover">
+              <button onclick="removeCoverPreview()" class="absolute top-1 right-1 bg-black/60 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px]"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">Hasil Foto (Drag & Drop Banyak Foto)</label>
+            <div id="dropZoneSamples" class="border-2 border-dashed border-stone-200 rounded-xl p-3 text-center cursor-pointer hover:bg-stone-50 transition bg-stone-50/50">
+              <i class="fa-solid fa-images text-stone-400 text-lg mb-1"></i>
+              <p class="text-[10px] text-stone-500 font-medium">Drag banyak sampel foto sekaligus atau <span class="text-brand-dark font-bold underline">pilih file</span></p>
+              <input type="file" id="samplesFileInput" accept="image/*" multiple class="hidden" onchange="handleSamplesSelect(this)">
+            </div>
+            
+            <div id="samplesContainer" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2"></div>
+          </div>
+
+          <button onclick="saveCameraProduct()" class="w-full bg-brand-dark text-white text-xs font-bold py-3 rounded-xl hover:bg-stone-800 transition active:scale-95 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Simpan Kamera ke Katalog</span>
+          </button>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 sm:p-6 border border-stone-200 shadow-sm">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-stone-800 mb-3">Daftar Produk Katalog</h4>
+          <div id="devProductList" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. MODAL DETAIL SPESIFIKASI UNIT -->
+  <div id="spekModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-300">
+    <div id="spekModalCard" class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[85vh] overflow-y-auto p-4 sm:p-5 shadow-2xl relative">
+      <button onclick="closeSpekModal()" class="absolute right-4 top-4 w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center text-stone-500 hover:text-black active:scale-90 transition-transform">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+
+      <div id="spekContent"></div>
+    </div>
+  </div>
+
+  <!-- 9. MODAL LIGHTBOX SLIDER -->
+  <div id="lightboxModal" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col justify-between p-4 backdrop-blur-md transition-opacity duration-300">
+    <div class="flex items-center justify-between text-white z-10 max-w-4xl mx-auto w-full">
+      <span id="lightboxCounter" class="text-xs font-mono bg-white/10 px-3 py-1 rounded-full border border-white/10">1 / 3</span>
+      <button onclick="closeLightbox()" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 active:scale-90 transition-transform">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <div class="relative flex-1 flex items-center justify-center my-4 overflow-hidden max-w-4xl mx-auto w-full" id="lightboxTouchArea">
+      <img id="lightboxImg" src="" class="max-h-full max-w-full object-contain rounded-lg transition-transform duration-300 transform scale-100">
+      
+      <button onclick="prevLightboxSlide()" class="absolute left-2 w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-sm hover:bg-black/70 active:scale-90 transition-transform">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <button onclick="nextLightboxSlide()" class="absolute right-2 w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-sm hover:bg-black/70 active:scale-90 transition-transform">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="text-center z-10 max-w-4xl mx-auto w-full">
+      <div id="lightboxThumbs" class="flex items-center justify-center gap-2 overflow-x-auto no-scrollbar py-1"></div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    const GITHUB_CONFIG = { token: '', owner: '', repo: '', branch: 'main' };
+    const DEV_PASSWORD = 'bgprimbau123';
+    const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+
+    const defaultCameras = [
+      {
+        id: 'canon-g7x-mk2',
+        name: 'Canon PowerShot G7 X Mark II',
+        category: 'compact',
+        desc: 'Digicam premium favorit content creator. Sensor 1 inch dengan hasil warna kulit natural & tajam dalam kondisi lowlight.',
+        image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80',
+        specs: ['20.1MP', '1"Sensor', 'f/1.8-f/2.8', 'FullHD60p', 'FlipScreenTouch'],
+        inclusions: [
+          'Baterai x2 + Charger',
+          'Handstrap & Memory Card',
+          'OTG Connector Type-C & Lightning'
+        ],
+        samples: [
+          { url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80' },
+          { url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=80' }
+        ]
+      },
+      {
+        id: 'sony-a6400',
+        name: 'Sony Alpha a6400',
+        category: 'mirrorless',
+        desc: 'Mirrorless autofokus super cepat real-time eye tracking. Cocok untuk kebutuhan foto portrait vlogging & videografi.',
+        image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=600&q=80',
+        specs: ['24.2MP', 'APS-CSensor', 'Real-timeEyeAF', '4KHDRVideo', 'Flip180Screen'],
+        inclusions: [
+          'Baterai x2 + Charger',
+          'Handstrap & Memory Card',
+          'OTG Connector Type-C & Lightning'
+        ],
+        samples: [
+          { url: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1000&q=80' }
+        ]
+      }
+    ];
+
+    let camerasData = [];
+    let currentCategory = 'all';
+    let currentLightboxSamples = [];
+    let currentLightboxIndex = 0;
+    let tempCoverBase64 = '';
+    let tempSamplesBase64 = [];
+
+    // Auto-fallback handler jika logo.png gagal dimuat
+    function handleLogoError(img) {
+      if (img.getAttribute('data-tried') !== 'true') {
+        img.setAttribute('data-tried', 'true');
+        img.src = 'logo.png';
+      } else {
+        img.style.display = 'none';
+        const svg = document.getElementById('splashLogoSvg');
+        if (svg) svg.classList.remove('hidden');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        splash.classList.add('splash-exit');
+        setTimeout(() => splash.style.display = 'none', 400);
+      }, 1800);
+      initApp();
+    });
+
+    async function initApp() {
+      const saved = localStorage.getItem('acg_catalog_data');
+      if (saved) {
+        try {
+          camerasData = JSON.parse(saved);
+        } catch (e) {
+          camerasData = defaultCameras;
+        }
+      } else {
+        if (GITHUB_CONFIG.token && GITHUB_CONFIG.owner && GITHUB_CONFIG.repo) {
+          try {
+            const remoteData = await fetchFileFromGitHub('data.json');
+            if (remoteData) {
+              camerasData = JSON.parse(remoteData);
+              localStorage.setItem('acg_catalog_data', JSON.stringify(camerasData));
+            } else {
+              camerasData = defaultCameras;
+            }
+          } catch (err) {
+            camerasData = defaultCameras;
+          }
+        } else {
+          camerasData = defaultCameras;
+        }
+      }
+      renderCatalog();
+    }
+
+    function saveCatalogToLocal() {
+      localStorage.setItem('acg_catalog_data', JSON.stringify(camerasData));
+      renderCatalog();
+      syncToGitHub();
+    }
+
+    function toggleMenu() {
+      const menu = document.getElementById('dropdownMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('dropdownMenu');
+      const btn = e.target.closest('button');
+      if (!menu.classList.contains('hidden') && (!btn || !btn.onclick || !btn.onclick.toString().includes('toggleMenu'))) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    function openDevAuthModal() {
+      const authTime = localStorage.getItem('acg_dev_auth_time');
+      const now = Date.now();
+      if (authTime && (now - parseInt(authTime)) < SESSION_TIMEOUT_MS) {
+        openDevPanel();
+      } else {
+        document.getElementById('devPasswordInput').value = '';
+        const modal = document.getElementById('devAuthModal');
+        const card = document.getElementById('devAuthCard');
+        modal.classList.remove('hidden');
+        card.classList.remove('ios-modal-exit');
+        card.classList.add('ios-modal-enter');
+      }
+    }
+
+    function closeDevAuthModal() {
+      const modal = document.getElementById('devAuthModal');
+      const card = document.getElementById('devAuthCard');
+      card.classList.remove('ios-modal-enter');
+      card.classList.add('ios-modal-exit');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        card.classList.remove('ios-modal-exit');
+      }, 200);
+    }
+
+    function verifyDevPassword() {
+      const input = document.getElementById('devPasswordInput').value;
+      if (input === DEV_PASSWORD) {
+        localStorage.setItem('acg_dev_auth_time', Date.now().toString());
+        closeDevAuthModal();
+        openDevPanel();
+      } else {
+        alert('Password Developer Site salah!');
+      }
+    }
+
+    function lockDevSession() {
+      localStorage.removeItem('acg_dev_auth_time');
+      closeDevPanel();
+      alert('Session Developer Site dikunci.');
+    }
+
+    function openDevPanel() {
+      document.getElementById('devPanelModal').classList.remove('hidden');
+      renderDevProductList();
+      setupDragAndDrop();
+    }
+
+    function closeDevPanel() {
+      document.getElementById('devPanelModal').classList.add('hidden');
+      resetForm();
+    }
+
+    function toggleMobileSearch() {
+      const bar = document.getElementById('mobileSearchBar');
+      bar.classList.toggle('open');
+      if (bar.classList.contains('open')) {
+        setTimeout(() => document.getElementById('searchInput').focus(), 150);
+      }
+    }
+
+    function handleSearchInput(val) {
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (val.trim().length > 0) {
+        clearBtn.classList.remove('opacity-0', 'scale-75', 'pointer-events-none');
+        clearBtn.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
+      } else {
+        clearBtn.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+        clearBtn.classList.add('opacity-0', 'scale-75', 'pointer-events-none');
+      }
+      renderCatalog();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      handleSearchInput('');
+      input.focus();
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById('catalogGrid');
+      const empty = document.getElementById('emptyState');
+      const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      const filtered = camerasData.filter(cam => {
+        const matchCategory = (currentCategory === 'all') || (cam.category === currentCategory);
+        const matchSearch = cam.name.toLowerCase().includes(searchVal) || (cam.desc && cam.desc.toLowerCase().includes(searchVal));
+        return matchCategory && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      grid.innerHTML = filtered.map(cam => `
+        <div class="bg-white rounded-2xl overflow-hidden border border-brand-border/70 shadow-sm flex flex-col justify-between group card-ios-hover">
+          <div>
+            <div class="relative aspect-square bg-stone-100 overflow-hidden">
+              <img src="${cam.image}" alt="${cam.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <span class="absolute top-2 left-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                ${cam.category}
+              </span>
+            </div>
+
+            <div class="p-2.5 sm:p-3">
+              <h3 class="text-xs sm:text-sm font-bold text-brand-dark line-clamp-1 leading-snug">${cam.name}</h3>
+              <p class="text-[10px] sm:text-xs text-stone-500 mt-1 line-clamp-2 leading-relaxed">${cam.desc || ''}</p>
+            </div>
+          </div>
+
+          <div class="p-2.5 sm:p-3 pt-0 grid grid-cols-2 gap-1.5 mt-1 sm:mt-2">
+            <button onclick="openSpekModal('${cam.id}')" class="w-full bg-stone-100 hover:bg-stone-200 text-brand-dark font-semibold text-[10px] sm:text-xs py-2 rounded-xl transition flex items-center justify-center gap-1 active:scale-95">
+              <i class="fa-solid fa-circle-info text-xs"></i>
+              <span>Spek</span>
+            </button>
+            <button onclick="openLightbox('${cam.id}')" class="w-full bg-brand-dark text-white font-semibold text-[10px] sm:text-xs py-2 rounded-xl hover:bg-stone-800 transition flex items-center justify-center gap-1 active:scale-95 shadow-sm">
+              <i class="fa-solid fa-camera text-xs"></i>
+              <span>Hasil</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterCategory(cat, event) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-dark', 'text-white');
+        btn.classList.add('bg-white', 'text-stone-600');
+      });
+      if (event && event.target) {
+        event.target.classList.remove('bg-white', 'text-stone-600');
+        event.target.classList.add('bg-brand-dark', 'text-white');
+      }
+      renderCatalog();
+    }
+
+    function openSpekModal(id) {
+      const cam = camerasData.find(c => c.id === id);
+      if (!cam) return;
+
+      const inclusionsList = (cam.inclusions && cam.inclusions.length > 0) 
+        ? cam.inclusions 
+        : [
+            'Baterai x2 + Charger',
+            'Handstrap & Memory Card',
+            'OTG Connector Type-C & Lightning'
+          ];
+
+      let specsList = [];
+      if (Array.isArray(cam.specs)) {
+        specsList = cam.specs.join(' ').split(/[\s,]+/).filter(s => s.trim() !== '');
+      } else if (typeof cam.specs === 'string') {
+        specsList = cam.specs.split(/[\s,]+/).filter(s => s.trim() !== '');
+      }
+
+      document.getElementById('spekContent').innerHTML = `
+        <div class="text-center mb-4">
+          <img src="${cam.image}" class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl mx-auto shadow-sm border border-stone-200 mb-2">
+          <h3 class="text-sm font-bold text-stone-900 leading-tight">${cam.name}</h3>
+          <span class="inline-block mt-1 bg-stone-100 text-stone-600 text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase">${cam.category}</span>
+        </div>
+
+        <div class="bg-stone-50 rounded-2xl p-3 sm:p-3.5 border border-stone-200/80 mb-3 sm:mb-4 space-y-2">
+          <h4 class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-stone-500">Kelengkapan Paket Sewa</h4>
+          <ul class="text-xs text-stone-700 space-y-1.5 font-medium">
+            ${inclusionsList.map(inc => `
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-check text-emerald-600 text-[10px]"></i>
+                <span>${inc}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+
+        ${specsList.length > 0 ? `
+        <div class="space-y-1.5 mb-3 sm:mb-4">
+          <h4 class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-stone-500">Spesifikasi Unit</h4>
+          <div class="flex flex-wrap gap-1.5">
+            ${specsList.map(s => `<span class="bg-stone-100 text-stone-800 text-[11px] font-medium px-2.5 py-1 rounded-lg">${s}</span>`).join('')}
+          </div>
+        </div>
+        ` : ''}
+
+        <p class="text-xs text-stone-600 leading-relaxed mb-4">${cam.desc || ''}</p>
+
+        <button onclick="closeSpekModal(); openLightbox('${cam.id}');" class="w-full bg-brand-dark text-white font-bold text-xs py-3 rounded-xl hover:bg-stone-800 transition active:scale-95 flex items-center justify-center gap-2 shadow-sm">
+          <i class="fa-solid fa-images"></i>
+          <span>Lihat Sampel Hasil Foto</span>
+        </button>
+      `;
+
+      const modal = document.getElementById('spekModal');
+      const card = document.getElementById('spekModalCard');
+      modal.classList.remove('hidden');
+      card.classList.remove('ios-modal-exit');
+      card.classList.add('ios-modal-enter');
+    }
+
+    function closeSpekModal() {
+      const modal = document.getElementById('spekModal');
+      const card = document.getElementById('spekModalCard');
+      card.classList.remove('ios-modal-enter');
+      card.classList.add('ios-modal-exit');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        card.classList.remove('ios-modal-exit');
+      }, 200);
+    }
+
+    function openLightbox(id) {
+      const cam = camerasData.find(c => c.id === id);
+      if (!cam || !cam.samples || cam.samples.length === 0) {
+        alert('Belum ada sampel foto untuk kamera ini.');
+        return;
+      }
+      currentLightboxSamples = cam.samples;
+      currentLightboxIndex = 0;
+      updateLightboxSlide();
+      document.getElementById('lightboxModal').classList.remove('hidden');
+    }
+
+    function closeLightbox() { 
+      document.getElementById('lightboxModal').classList.add('hidden'); 
+    }
+
+    function updateLightboxSlide() {
+      const sample = currentLightboxSamples[currentLightboxIndex];
+      document.getElementById('lightboxImg').src = sample.url;
+      document.getElementById('lightboxCounter').innerText = `${currentLightboxIndex + 1} / ${currentLightboxSamples.length}`;
+
+      document.getElementById('lightboxThumbs').innerHTML = currentLightboxSamples.map((s, idx) => `
+        <button onclick="setLightboxIndex(${idx})" class="w-10 h-10 rounded-lg overflow-hidden border-2 transition ${idx === currentLightboxIndex ? 'border-white scale-105' : 'border-transparent opacity-50'}">
+          <img src="${s.url}" class="w-full h-full object-cover">
+        </button>
+      `).join('');
+    }
+
+    function setLightboxIndex(idx) { currentLightboxIndex = idx; updateLightboxSlide(); }
+    function prevLightboxSlide() { currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxSamples.length) % currentLightboxSamples.length; updateLightboxSlide(); }
+    function nextLightboxSlide() { currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxSamples.length; updateLightboxSlide(); }
+
+    let touchStartX = 0;
+    document.getElementById('lightboxTouchArea').addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+    document.getElementById('lightboxTouchArea').addEventListener('touchend', e => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 40) nextLightboxSlide();
+      if (touchEndX - touchStartX > 40) prevLightboxSlide();
+    });
+
+    function setupDragAndDrop() {
+      const dropCover = document.getElementById('dropZoneCover');
+      const dropSamples = document.getElementById('dropZoneSamples');
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropCover.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+        dropSamples.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+      });
+      dropCover.addEventListener('drop', e => { if (e.dataTransfer.files.length > 0) processCoverFile(e.dataTransfer.files[0]); });
+      dropSamples.addEventListener('drop', e => { if (e.dataTransfer.files.length > 0) processSampleFiles(e.dataTransfer.files); });
+      dropCover.onclick = () => document.getElementById('coverFileInput').click();
+      dropSamples.onclick = () => document.getElementById('samplesFileInput').click();
+    }
+
+    function handleCoverSelect(input) { if (input.files && input.files[0]) processCoverFile(input.files[0]); }
+    function handleSamplesSelect(input) { if (input.files && input.files.length > 0) processSampleFiles(input.files); }
+
+    function compressImage(file, maxWidth = 1200, quality = 0.8) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = event => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width, height = img.height;
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+        };
+      });
+    }
+
+    async function processCoverFile(file) {
+      tempCoverBase64 = await compressImage(file, 800, 0.85);
+      document.getElementById('coverPreviewImg').src = tempCoverBase64;
+      document.getElementById('coverPreviewBox').classList.remove('hidden');
+    }
+
+    function removeCoverPreview() {
+      tempCoverBase64 = '';
+      document.getElementById('coverPreviewImg').src = '';
+      document.getElementById('coverPreviewBox').classList.add('hidden');
+      document.getElementById('coverFileInput').value = '';
+    }
+
+    async function processSampleFiles(files) {
+      for (let i = 0; i < files.length; i++) {
+        const base64 = await compressImage(files[i], 1200, 0.8);
+        tempSamplesBase64.push({ url: base64 });
+      }
+      renderSampleUploadPreviews();
+    }
+
+    function renderSampleUploadPreviews() {
+      document.getElementById('samplesContainer').innerHTML = tempSamplesBase64.map((s, idx) => `
+        <div class="relative rounded-lg overflow-hidden border border-stone-200 aspect-square group">
+          <img src="${s.url}" class="w-full h-full object-cover">
+          <button onclick="removeSamplePreview(${idx})" class="absolute top-1 right-1 bg-black/70 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px]"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      `).join('');
+    }
+
+    function removeSamplePreview(idx) { tempSamplesBase64.splice(idx, 1); renderSampleUploadPreviews(); }
+
+    function saveCameraProduct() {
+      const idInput = document.getElementById('editCamId').value;
+      const name = document.getElementById('camName').value.trim();
+      const category = document.getElementById('camCategory').value;
+      const desc = document.getElementById('camDesc').value.trim();
+
+      const inclusionsRaw = document.getElementById('camInclusions').value.trim();
+      const inclusions = inclusionsRaw 
+        ? inclusionsRaw.split('\n').map(i => i.trim()).filter(i => i !== '') 
+        : [
+            'Baterai x2 + Charger',
+            'Handstrap & Memory Card',
+            'OTG Connector Type-C & Lightning'
+          ];
+
+      const specsRaw = document.getElementById('camSpecs').value.trim();
+      const specs = specsRaw 
+        ? specsRaw.split(/[\s,]+/).map(s => s.trim()).filter(s => s !== '') 
+        : [];
+
+      if (!name) { alert('Nama kamera wajib diisi!'); return; }
+      if (!tempCoverBase64 && !idInput) { alert('Foto cover kamera wajib diunggah!'); return; }
+
+      if (idInput) {
+        const index = camerasData.findIndex(c => c.id === idInput);
+        if (index !== -1) {
+          camerasData[index].name = name;
+          camerasData[index].category = category;
+          camerasData[index].desc = desc;
+          camerasData[index].inclusions = inclusions;
+          camerasData[index].specs = specs;
+          if (tempCoverBase64) camerasData[index].image = tempCoverBase64;
+          if (tempSamplesBase64.length > 0) camerasData[index].samples = tempSamplesBase64;
+        }
+      } else {
+        camerasData.unshift({
+          id: 'cam-' + Date.now(),
+          name, category, desc,
+          inclusions, specs,
+          image: tempCoverBase64,
+          samples: tempSamplesBase64.length > 0 ? tempSamplesBase64 : [{ url: tempCoverBase64 }]
+        });
+      }
+
+      saveCatalogToLocal();
+      renderDevProductList();
+      resetForm();
+      alert('Kamera berhasil disimpan!');
+    }
+
+    function renderDevProductList() {
+      document.getElementById('devProductList').innerHTML = camerasData.map(cam => `
+        <div class="flex items-center justify-between p-2.5 bg-stone-50 rounded-xl border border-stone-200">
+          <div class="flex items-center gap-2.5">
+            <img src="${cam.image}" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+              <h5 class="text-xs font-bold text-stone-900 leading-tight">${cam.name}</h5>
+              <span class="text-[9px] text-stone-500 uppercase font-semibold">${cam.category}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1">
+            <button onclick="editCameraProduct('${cam.id}')" class="w-7 h-7 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-stone-600 hover:text-black active:scale-90"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
+            <button onclick="deleteCameraProduct('${cam.id}')" class="w-7 h-7 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-red-500 hover:text-red-700 active:scale-90"><i class="fa-solid fa-trash text-xs"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function editCameraProduct(id) {
+      const cam = camerasData.find(c => c.id === id);
+      if (!cam) return;
+
+      document.getElementById('formTitle').innerText = 'Edit Kamera';
+      document.getElementById('cancelEditBtn').classList.remove('hidden');
+      document.getElementById('editCamId').value = cam.id;
+      document.getElementById('camName').value = cam.name;
+      document.getElementById('camCategory').value = cam.category;
+      document.getElementById('camDesc').value = cam.desc || '';
+
+      const defaultInc = [
+        'Baterai x2 + Charger',
+        'Handstrap & Memory Card',
+        'OTG Connector Type-C & Lightning'
+      ];
+      const incList = (cam.inclusions && cam.inclusions.length > 0) ? cam.inclusions : defaultInc;
+      document.getElementById('camInclusions').value = incList.join('\n');
+
+      document.getElementById('camSpecs').value = (cam.specs || []).join(' ');
+
+      tempCoverBase64 = cam.image;
+      document.getElementById('coverPreviewImg').src = cam.image;
+      document.getElementById('coverPreviewBox').classList.remove('hidden');
+
+      tempSamplesBase64 = [...(cam.samples || [])];
+      renderSampleUploadPreviews();
+    }
+
+    function deleteCameraProduct(id) {
+      if (confirm('Yakin ingin menghapus kamera ini dari katalog?')) {
+        camerasData = camerasData.filter(c => c.id !== id);
+        saveCatalogToLocal();
+        renderDevProductList();
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('formTitle').innerText = 'Tambah Kamera Baru';
+      document.getElementById('cancelEditBtn').classList.add('hidden');
+      document.getElementById('editCamId').value = '';
+      document.getElementById('camName').value = '';
+      document.getElementById('camDesc').value = '';
+      document.getElementById('camInclusions').value = '';
+      document.getElementById('camSpecs').value = '';
+      removeCoverPreview();
+      tempSamplesBase64 = [];
+      renderSampleUploadPreviews();
+    }
+
+    async function syncToGitHub() {
+      if (!GITHUB_CONFIG.token || !GITHUB_CONFIG.owner || !GITHUB_CONFIG.repo) return;
+      try {
+        await uploadFileToGitHub('data.json', utf8ToBase64(JSON.stringify(camerasData, null, 2)), 'Update catalog data.json via Developer Site');
+      } catch (err) {}
+    }
+
+    async function uploadFileToGitHub(path, base64Content, commitMessage) {
+      const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
+      let sha = null;
+      try {
+        const getRes = await fetch(url, { headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` } });
+        if (getRes.ok) sha = (await getRes.json()).sha;
+      } catch (e) {}
+
+      const body = { message: commitMessage, content: base64Content, branch: GITHUB_CONFIG.branch || 'main' };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${GITHUB_CONFIG.token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      return putRes.ok;
+    }
+
+    async function fetchFileFromGitHub(path) {
+      const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}?ref=${GITHUB_CONFIG.branch || 'main'}`;
+      const res = await fetch(url, { headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` } });
+      if (res.ok) return decodeURIComponent(escape(atob((await res.json()).content)));
+      return null;
+    }
+
+    function utf8ToBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
+  </script>
+</body>
+</html>
