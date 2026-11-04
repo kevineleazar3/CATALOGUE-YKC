@@ -51,7 +51,7 @@
     }
     @media (min-width: 640px) {
       input, select, textarea {
-        font-size: 0.75rem !important; /* 12px on desktop */
+        font-size: 0.75rem !important;
       }
     }
 
@@ -122,7 +122,7 @@
 </head>
 <body class="h-full font-sans bg-[#F5F2EC] text-brand-dark antialiased selection:bg-brand-dark selection:text-white flex flex-col min-h-screen w-full">
 
-  <!-- 1. MOTION SPLASH SCREEN INTRO (BOX DARK STUDIO ELEGAN TAJAM) -->
+  <!-- 1. MOTION SPLASH SCREEN INTRO -->
   <div id="splashScreen" class="fixed inset-0 z-[100] bg-[#F5F2EC] flex flex-col items-center justify-center p-6 transition-all duration-500">
     <div class="relative flex flex-col items-center justify-center">
       
@@ -383,9 +383,14 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- JAVASCRIPT LOGIC DENGAN SINKRONISASI GITHUB REST API -->
   <script>
-    const GITHUB_CONFIG = { token: '', owner: '', repo: '', branch: 'main' };
+    const GITHUB_CONFIG = {
+      token: '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',
+      owner: 'kevineleazar3',
+      repo: 'CATALOGUE-YKC',
+      branch: 'main'
+    };
     const DEV_PASSWORD = 'bgprimbau123';
     const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
 
@@ -432,7 +437,6 @@
     let tempCoverBase64 = '';
     let tempSamplesBase64 = [];
 
-    // Auto-fallback handler jika logo.png gagal dimuat
     function handleLogoError(img) {
       if (img.getAttribute('data-tried') !== 'true') {
         img.setAttribute('data-tried', 'true');
@@ -454,6 +458,18 @@
     });
 
     async function initApp() {
+      if (GITHUB_CONFIG.token && GITHUB_CONFIG.owner && GITHUB_CONFIG.repo) {
+        try {
+          const remoteData = await fetchFileFromGitHub('data.json');
+          if (remoteData) {
+            camerasData = JSON.parse(remoteData);
+            localStorage.setItem('acg_catalog_data', JSON.stringify(camerasData));
+            renderCatalog();
+            return;
+          }
+        } catch (err) {}
+      }
+
       const saved = localStorage.getItem('acg_catalog_data');
       if (saved) {
         try {
@@ -462,21 +478,7 @@
           camerasData = defaultCameras;
         }
       } else {
-        if (GITHUB_CONFIG.token && GITHUB_CONFIG.owner && GITHUB_CONFIG.repo) {
-          try {
-            const remoteData = await fetchFileFromGitHub('data.json');
-            if (remoteData) {
-              camerasData = JSON.parse(remoteData);
-              localStorage.setItem('acg_catalog_data', JSON.stringify(camerasData));
-            } else {
-              camerasData = defaultCameras;
-            }
-          } catch (err) {
-            camerasData = defaultCameras;
-          }
-        } else {
-          camerasData = defaultCameras;
-        }
+        camerasData = defaultCameras;
       }
       renderCatalog();
     }
@@ -771,7 +773,7 @@
     function handleCoverSelect(input) { if (input.files && input.files[0]) processCoverFile(input.files[0]); }
     function handleSamplesSelect(input) { if (input.files && input.files.length > 0) processSampleFiles(input.files); }
 
-    function compressImage(file, maxWidth = 1200, quality = 0.8) {
+    function compressImage(file, maxWidth = 1000, quality = 0.75) {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -795,7 +797,7 @@
     }
 
     async function processCoverFile(file) {
-      tempCoverBase64 = await compressImage(file, 800, 0.85);
+      tempCoverBase64 = await compressImage(file, 800, 0.8);
       document.getElementById('coverPreviewImg').src = tempCoverBase64;
       document.getElementById('coverPreviewBox').classList.remove('hidden');
     }
@@ -809,7 +811,7 @@
 
     async function processSampleFiles(files) {
       for (let i = 0; i < files.length; i++) {
-        const base64 = await compressImage(files[i], 1200, 0.8);
+        const base64 = await compressImage(files[i], 1000, 0.75);
         tempSamplesBase64.push({ url: base64 });
       }
       renderSampleUploadPreviews();
