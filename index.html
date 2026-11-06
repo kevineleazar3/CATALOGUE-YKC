@@ -14,6 +14,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Firebase SDK (Compat Mode Khusus Single File HTML) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -230,8 +235,8 @@
     <div class="min-h-full max-w-2xl mx-auto bg-[#F5F2EC] flex flex-col min-h-screen">
       <div class="sticky top-0 bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between z-10">
         <div class="flex items-center gap-2">
-          <div id="syncStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-          <span id="syncStatusText" class="text-xs font-bold tracking-tight text-stone-900">Developer Site Panel</span>
+          <div id="syncStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span id="syncStatusText" class="text-xs font-bold tracking-tight text-stone-900">Firebase Realtime Connected</span>
         </div>
         <div class="flex items-center gap-2">
           <button onclick="lockDevSession()" class="text-[11px] bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium px-2.5 py-1 rounded-lg transition active:scale-95" title="Kunci Session">
@@ -305,8 +310,8 @@
           </div>
 
           <button id="saveBtn" onclick="saveCameraProduct()" class="w-full bg-brand-dark text-white text-xs font-bold py-3 rounded-xl hover:bg-stone-800 transition active:scale-95 flex items-center justify-center gap-2">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <span>Simpan & Sinkronkan ke Semua Device</span>
+            <i class="fa-solid fa-bolt text-yellow-400"></i>
+            <span>Publish Instant (Real-time Sync)</span>
           </button>
         </div>
 
@@ -352,36 +357,37 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT SYSTEM ENGINE -->
+  <!-- JAVASCRIPT SYSTEM ENGINE (FIREBASE INSTANT SYNC TERINTEGRASI) -->
   <script>
-    const GITHUB_CONFIG = {
-      token: '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',
-      owner: 'kevineleazar3',
-      repo: 'CATALOGUE-YKC',
-      branch: 'main'
+    // FIREBASE CONFIG MILIK ANDA
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHZT1xMG4FGWMeAqcRn_stgzmOzqzlDwg",
+      authDomain: "ykc-catalogue.firebaseapp.com",
+      databaseURL: "https://ykc-catalogue-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "ykc-catalogue",
+      storageBucket: "ykc-catalogue.firebasestorage.app",
+      messagingSenderId: "950874992351",
+      appId: "1:950874992351:web:7ae0f5ca0922c0aa64036a",
+      measurementId: "G-SVKMFKBKZB"
     };
+
+    // Inisialisasi Firebase App, Firestore & Storage
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
     const DEV_PASSWORD = 'bgprimbau123';
     const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
-
-    const defaultCameras = [
-      {
-        id: 'canon-g7x-mk2',
-        name: 'Canon PowerShot G7 X Mark II',
-        category: 'compact',
-        desc: 'Digicam premium favorit content creator. Sensor 1 inch dengan hasil warna kulit natural & tajam dalam kondisi lowlight.',
-        image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80',
-        specs: ['20.1MP', '1"Sensor', 'f/1.8-f/2.8', 'FullHD60p', 'FlipScreenTouch'],
-        inclusions: ['Baterai x2 + Charger', 'Handstrap & Memory Card', 'OTG Connector Type-C & Lightning'],
-        samples: [{ url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80' }]
-      }
-    ];
 
     let camerasData = [];
     let currentCategory = 'all';
     let currentLightboxSamples = [];
     let currentLightboxIndex = 0;
-    let tempCoverBase64 = '';
-    let tempSamplesBase64 = [];
+    
+    let tempCoverFile = null;
+    let tempCoverUrl = '';
+    let tempSampleFiles = [];
+    let tempSampleUrls = [];
 
     function handleLogoError(img) {
       if (img.getAttribute('data-tried') !== 'true') {
@@ -400,36 +406,18 @@
         splash.classList.add('splash-exit');
         setTimeout(() => splash.style.display = 'none', 400);
       }, 1600);
-      initApp();
+
+      // LISTENER REALTIME FIREBASE (SINKRONISASI INSTAN DI SEMUA HP/DEVICE)
+      db.collection('cameras').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+        camerasData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderCatalog();
+        renderDevProductList();
+      }, error => {
+        console.error("Firebase Listener Error:", error);
+      });
     });
 
-    async function initApp() {
-      if (GITHUB_CONFIG.token && GITHUB_CONFIG.owner && GITHUB_CONFIG.repo) {
-        try {
-          const remoteData = await fetchFileFromGitHub('data.json');
-          if (remoteData) {
-            camerasData = JSON.parse(remoteData);
-            localStorage.setItem('acg_catalog_data', JSON.stringify(camerasData));
-            renderCatalog();
-            return;
-          }
-        } catch (err) {
-          console.error('Fetch error:', err);
-        }
-      }
-
-      const saved = localStorage.getItem('acg_catalog_data');
-      if (saved) {
-        try { camerasData = JSON.parse(saved); } catch (e) { camerasData = defaultCameras; }
-      } else {
-        camerasData = defaultCameras;
-      }
-      renderCatalog();
-    }
-
-    function toggleMenu() {
-      document.getElementById('dropdownMenu').classList.toggle('hidden');
-    }
+    function toggleMenu() { document.getElementById('dropdownMenu').classList.toggle('hidden'); }
 
     document.addEventListener('click', (e) => {
       const menu = document.getElementById('dropdownMenu');
@@ -665,61 +653,55 @@
     function handleCoverSelect(input) { if (input.files && input.files[0]) processCoverFile(input.files[0]); }
     function handleSamplesSelect(input) { if (input.files && input.files.length > 0) processSampleFiles(input.files); }
 
-    // Kompresi Gambar Maksimal (Mencegah Payload GitHub Terlalu Besar)
-    function compressImage(file, maxWidth = 600, quality = 0.65) {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = event => {
-          const img = new Image();
-          img.src = event.target.result;
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            let width = img.width, height = img.height;
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            }
-            canvas.width = width; canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL('image/jpeg', quality));
-          };
-        };
-      });
-    }
-
-    async function processCoverFile(file) {
-      tempCoverBase64 = await compressImage(file, 600, 0.65);
-      document.getElementById('coverPreviewImg').src = tempCoverBase64;
+    function processCoverFile(file) {
+      tempCoverFile = file;
+      document.getElementById('coverPreviewImg').src = URL.createObjectURL(file);
       document.getElementById('coverPreviewBox').classList.remove('hidden');
     }
 
     function removeCoverPreview() {
-      tempCoverBase64 = '';
+      tempCoverFile = null;
+      tempCoverUrl = '';
       document.getElementById('coverPreviewImg').src = '';
       document.getElementById('coverPreviewBox').classList.add('hidden');
       document.getElementById('coverFileInput').value = '';
     }
 
-    async function processSampleFiles(files) {
+    function processSampleFiles(files) {
       for (let i = 0; i < files.length; i++) {
-        const base64 = await compressImage(files[i], 750, 0.65);
-        tempSamplesBase64.push({ url: base64 });
+        tempSampleFiles.push(files[i]);
       }
       renderSampleUploadPreviews();
     }
 
     function renderSampleUploadPreviews() {
-      document.getElementById('samplesContainer').innerHTML = tempSamplesBase64.map((s, idx) => `
+      const allPreviews = [
+        ...tempSampleUrls.map(s => s.url),
+        ...tempSampleFiles.map(f => URL.createObjectURL(f))
+      ];
+
+      document.getElementById('samplesContainer').innerHTML = allPreviews.map((url, idx) => `
         <div class="relative rounded-lg overflow-hidden border border-stone-200 aspect-square group">
-          <img src="${s.url}" class="w-full h-full object-cover">
+          <img src="${url}" class="w-full h-full object-cover">
           <button onclick="removeSamplePreview(${idx})" class="absolute top-1 right-1 bg-black/70 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px]"><i class="fa-solid fa-xmark"></i></button>
         </div>
       `).join('');
     }
 
-    function removeSamplePreview(idx) { tempSamplesBase64.splice(idx, 1); renderSampleUploadPreviews(); }
+    function removeSamplePreview(idx) {
+      if (idx < tempSampleUrls.length) {
+        tempSampleUrls.splice(idx, 1);
+      } else {
+        tempSampleFiles.splice(idx - tempSampleUrls.length, 1);
+      }
+      renderSampleUploadPreviews();
+    }
+
+    async function uploadToFirebaseStorage(file, path) {
+      const ref = storage.ref(path);
+      const snapshot = await ref.put(file);
+      return await snapshot.ref.getDownloadURL();
+    }
 
     async function saveCameraProduct() {
       const saveBtn = document.getElementById('saveBtn');
@@ -727,50 +709,56 @@
       const name = document.getElementById('camName').value.trim();
       const category = document.getElementById('camCategory').value;
       const desc = document.getElementById('camDesc').value.trim();
+
       const inclusionsRaw = document.getElementById('camInclusions').value.trim();
       const inclusions = inclusionsRaw ? inclusionsRaw.split('\n').map(i => i.trim()).filter(i => i !== '') : ['Baterai x2 + Charger', 'Handstrap & Memory Card', 'OTG Connector Type-C & Lightning'];
       const specsRaw = document.getElementById('camSpecs').value.trim();
       const specs = specsRaw ? specsRaw.split(/[\s,]+/).map(s => s.trim()).filter(s => s !== '') : [];
 
       if (!name) { alert('Nama kamera wajib diisi!'); return; }
-      if (!tempCoverBase64 && !idInput) { alert('Foto cover kamera wajib diunggah!'); return; }
+      if (!tempCoverFile && !tempCoverUrl && !idInput) { alert('Foto cover kamera wajib diunggah!'); return; }
 
       saveBtn.disabled = true;
-      saveBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Mengunggah ke GitHub...</span>`;
+      saveBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Mengunggah ke Cloud Storage...</span>`;
 
-      if (idInput) {
-        const index = camerasData.findIndex(c => c.id === idInput);
-        if (index !== -1) {
-          camerasData[index].name = name;
-          camerasData[index].category = category;
-          camerasData[index].desc = desc;
-          camerasData[index].inclusions = inclusions;
-          camerasData[index].specs = specs;
-          if (tempCoverBase64) camerasData[index].image = tempCoverBase64;
-          if (tempSamplesBase64.length > 0) camerasData[index].samples = tempSamplesBase64;
+      try {
+        let finalCoverUrl = tempCoverUrl;
+        if (tempCoverFile) {
+          finalCoverUrl = await uploadToFirebaseStorage(tempCoverFile, `covers/${Date.now()}_${tempCoverFile.name}`);
         }
-      } else {
-        camerasData.unshift({
-          id: 'cam-' + Date.now(),
+
+        let finalSampleUrls = [...tempSampleUrls];
+        for (let i = 0; i < tempSampleFiles.length; i++) {
+          const url = await uploadToFirebaseStorage(tempSampleFiles[i], `samples/${Date.now()}_${tempSampleFiles[i].name}`);
+          finalSampleUrls.push({ url });
+        }
+
+        if (finalSampleUrls.length === 0 && finalCoverUrl) {
+          finalSampleUrls = [{ url: finalCoverUrl }];
+        }
+
+        const cameraDocData = {
           name, category, desc, inclusions, specs,
-          image: tempCoverBase64,
-          samples: tempSamplesBase64.length > 0 ? tempSamplesBase64 : [{ url: tempCoverBase64 }]
-        });
-      }
+          image: finalCoverUrl,
+          samples: finalSampleUrls,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
 
-      localStorage.setItem('acg_catalog_data', JSON.stringify(camerasData));
-      renderCatalog();
+        if (idInput) {
+          await db.collection('cameras').doc(idInput).update(cameraDocData);
+        } else {
+          cameraDocData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          await db.collection('cameras').add(cameraDocData);
+        }
 
-      const success = await syncToGitHub();
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Simpan & Sinkronkan ke Semua Device</span>`;
-
-      if (success) {
-        renderDevProductList();
         resetForm();
-        alert('Kamera BERHASIL disimpan & tersinkronisasi ke seluruh device!');
-      } else {
-        alert('Data tersimpan lokal, namun GAGAL diunggah ke GitHub! Periksa apakah ukuran foto terlalu banyak/besar.');
+        alert('Kamera BERHASIL di-publish secara instan ke seluruh HP!');
+      } catch (err) {
+        console.error("Save error:", err);
+        alert('Gagal mengunggah data ke Firebase: ' + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `<i class="fa-solid fa-bolt text-yellow-400"></i> <span>Publish Instant (Real-time Sync)</span>`;
       }
     }
 
@@ -804,20 +792,23 @@
       document.getElementById('camInclusions').value = ((cam.inclusions && cam.inclusions.length > 0) ? cam.inclusions : ['Baterai x2 + Charger', 'Handstrap & Memory Card', 'OTG Connector Type-C & Lightning']).join('\n');
       document.getElementById('camSpecs').value = (cam.specs || []).join(' ');
 
-      tempCoverBase64 = cam.image;
+      tempCoverUrl = cam.image;
+      tempCoverFile = null;
       document.getElementById('coverPreviewImg').src = cam.image;
       document.getElementById('coverPreviewBox').classList.remove('hidden');
-      tempSamplesBase64 = [...(cam.samples || [])];
+
+      tempSampleUrls = [...(cam.samples || [])];
+      tempSampleFiles = [];
       renderSampleUploadPreviews();
     }
 
     async function deleteCameraProduct(id) {
-      if (confirm('Yakin ingin menghapus kamera ini dari katalog?')) {
-        camerasData = camerasData.filter(c => c.id !== id);
-        localStorage.setItem('acg_catalog_data', JSON.stringify(camerasData));
-        renderCatalog();
-        renderDevProductList();
-        await syncToGitHub();
+      if (confirm('Yakin ingin menghapus kamera ini? Perubahan akan langsung hilang di seluruh device.')) {
+        try {
+          await db.collection('cameras').doc(id).delete();
+        } catch (e) {
+          alert("Gagal menghapus: " + e.message);
+        }
       }
     }
 
@@ -830,68 +821,9 @@
       document.getElementById('camInclusions').value = '';
       document.getElementById('camSpecs').value = '';
       removeCoverPreview();
-      tempSamplesBase64 = [];
+      tempSampleFiles = [];
+      tempSampleUrls = [];
       renderSampleUploadPreviews();
-    }
-
-    // SINKRONISASI DENGAN PEMUTUS CACHE BERKALA
-    async function syncToGitHub() {
-      if (!GITHUB_CONFIG.token || !GITHUB_CONFIG.owner || !GITHUB_CONFIG.repo) return false;
-      try {
-        const jsonString = JSON.stringify(camerasData);
-        const encodedContent = utf8ToBase64(jsonString);
-        return await uploadFileToGitHub('data.json', encodedContent, 'Update catalog data.json via Developer Site');
-      } catch (err) {
-        console.error('Sync Error:', err);
-        return false;
-      }
-    }
-
-    async function uploadFileToGitHub(path, base64Content, commitMessage) {
-      const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
-      let sha = null;
-      try {
-        const getRes = await fetch(`${url}?_t=${Date.now()}`, { 
-          headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` },
-          cache: 'no-store'
-        });
-        if (getRes.ok) sha = (await getRes.json()).sha;
-      } catch (e) {}
-
-      const body = { message: commitMessage, content: base64Content, branch: GITHUB_CONFIG.branch || 'main' };
-      if (sha) body.sha = sha;
-
-      const putRes = await fetch(url, {
-        method: 'PUT',
-        headers: { 
-          'Authorization': `token ${GITHUB_CONFIG.token}`, 
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify(body)
-      });
-      return putRes.ok;
-    }
-
-    async function fetchFileFromGitHub(path) {
-      const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}?ref=${GITHUB_CONFIG.branch || 'main'}&_t=${Date.now()}`;
-      const res = await fetch(url, { 
-        headers: { 'Authorization': `token ${GITHUB_CONFIG.token}` },
-        cache: 'no-store'
-      });
-      if (res.ok) {
-        const json = await res.json();
-        return base64ToUtf8(json.content);
-      }
-      return null;
-    }
-
-    function utf8ToBase64(str) {
-      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
-    }
-
-    function base64ToUtf8(str) {
-      const cleanStr = str.replace(/\s/g, '');
-      return decodeURIComponent(Array.prototype.map.call(atob(cleanStr), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
     }
   </script>
 </body>
